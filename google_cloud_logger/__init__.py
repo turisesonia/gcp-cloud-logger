@@ -1,7 +1,8 @@
-__version__ = "0.1.0"
-
+import os
 import json
 from google.cloud import logging as cloud_logging
+
+__version__ = "0.1.0"
 
 
 class CloudLogger(object):
@@ -14,16 +15,21 @@ class CloudLogger(object):
 
     def __init__(self, **kwargs):
 
-        credential_path = kwargs.get("credential_path")
+        credential_path = kwargs.get("credential_path") or os.environ.get(
+            "GOOGLE_APPLICATION_CREDENTIALS"
+        )
 
-        if not credential_path:
-            __client = cloud_logging.Client.from_service_account_json(credential_path)
-        else:
-            __client = {}
+        if credential_path is None:
+            raise Exception("Please set GOOGLE_APPLICATION_CREDENTIALS")
 
-        __handler = __client.get_default_handler()
+        if not os.path.isfile(credential_path):
+            raise Exception("Credential file path is not exists")
 
-        self.__logger = __client.logger(kwargs.get("name", "google_cloud_logger"))
+        __client = cloud_logging.Client.from_service_account_json(credential_path)
+
+        self.__logger = __client.logger(
+            kwargs.get("logger_name", "google_cloud_logger")
+        )
 
     def info(self, content):
         self.log_text(content, severity="INFO")
@@ -42,6 +48,3 @@ class CloudLogger(object):
             content = json.dumps(content)
 
         self.__logger.log_text(content, severity=kwargs.get("severity", "INFO"))
-
-
-cloud_logger = CloudLogger()
