@@ -1,4 +1,4 @@
-from google_cloud_logger import __version__, CloudLogger
+from gcp_cloud_logger import __version__, CloudLogger
 
 
 def test_version():
