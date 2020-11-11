@@ -2,7 +2,7 @@ import os
 import json
 from google.cloud import logging as cloud_logging
 
-__version__ = "0.1.0"
+__version__ = "0.0.3"
 
 
 class CloudLogger(object):
