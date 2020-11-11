@@ -27,9 +27,7 @@ class CloudLogger(object):
 
         __client = cloud_logging.Client.from_service_account_json(credential_path)
 
-        self.__logger = __client.logger(
-            kwargs.get("logger_name", "google_cloud_logger")
-        )
+        self.__logger = __client.logger(kwargs.get("name", "google_cloud_logger"))
 
     def info(self, content):
         self.log_text(content, severity="INFO")
