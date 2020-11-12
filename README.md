@@ -36,12 +36,4 @@ logger.critical("Test critical log message")
 ```
 
 ### Result
-
-- Info
-  ![Info log](/docs/info.png)
-- Warning
-  ![Warning log](/docs/warn.png)
-- Error
-  ![Error log](/docs/error.png)
-- Critical
-  ![Critical log](/docs/critical.png)
+![Result log](/docs/result.png)
