@@ -12,7 +12,7 @@ setuptools.setup(
     description="Google Cloud Platform logging package",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/turisesonia/gcp_cloud_logger",
     packages=setuptools.find_packages(exclude=["docs", "tests", "tests.*"]),
     classifiers=[
         "Programming Language :: Python :: 3",
