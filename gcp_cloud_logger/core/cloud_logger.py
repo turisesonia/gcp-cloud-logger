@@ -1,11 +1,12 @@
 import os
 import ujson as json
 from google.cloud import logging as cloud_logging
+from google.oauth2 import service_account
 
 
 class CloudLogger(object):
-    def __init__(self):
-        pass
+
+    __client = None
 
     __logger = None
 
@@ -18,37 +19,30 @@ class CloudLogger(object):
             credential_json (str or dict): service account key json string
         """
 
-        credential_path = kwargs.get("credential_path") or os.environ.get(
-            "GOOGLE_APPLICATION_CREDENTIALS"
-        )
+        if "credential_path" in kwargs:
+            self.__setup_with_path(kwargs.get("credential_path"))
 
-        if credential_path is None:
+        elif "credential_json" in kwargs:
+            self.__setup_with_json(kwargs.get("credential_json"))
+
+        else:
+            self.__setup_with_path(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+
+        self.__logger = self.__client.logger(kwargs.get("name", "gcp_cloud_logger"))
+
+    def __setup_with_path(self, credential_path: str):
+        if not os.path.isfile(credential_path):
             raise Exception(
                 "credential_path or GOOGLE_APPLICATION_CREDENTIALS is not exists"
             )
 
-        credential_json = kwargs.get("credential_json")
+        self.__client = cloud_logging.Client.from_service_account_json(credential_path)
 
-        if credential_json is not None:
-            self.__credential_setup(credential_path, credential_json)
-
-        if not os.path.isfile(credential_path):
-            raise Exception("Credential file is not exists")
-
-        client = cloud_logging.Client.from_service_account_json(credential_path)
-
-        self.__logger = client.logger(kwargs.get("name", "gcp_cloud_logger"))
-
-    def __credential_setup(self, credential_path: str, credential_json) -> str:
-        if type(credential_json) == str:
-            credential_json = json.loads(credential_json)
-
-        if not os.path.isfile(credential_path):
-            with open(credential_path, "w", encoding="utf-8") as json_file:
-                json_file.write(json.dumps(credential_json))
-                json_file.close()
-
-        return credential_path
+    def __setup_with_json(self, credential_json: str):
+        credentials = service_account.Credentials.from_service_account_info(
+            json.loads(credential_json)
+        )
+        self.__client = cloud_logging.Client(credentials=credentials)
 
     def info(self, content):
         self.log_text(content, severity="INFO")
