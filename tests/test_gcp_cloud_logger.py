@@ -8,7 +8,6 @@ def test_setup_credential_path():
 
 
 def test_setup_credential_json():
-    credential_path = "service_account.json"
     credential_json = '{"type":"service_account","project_id":"","private_key_id":"","private_key":"","client_email":","client_id":"","auth_uri":"","token_uri":"","auth_provider_x509_cert_url":"","client_x509_cert_url":""}'
 
     cloud_logger.setup(

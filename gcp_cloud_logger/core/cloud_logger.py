@@ -38,10 +38,17 @@ class CloudLogger(object):
 
         self.__client = cloud_logging.Client.from_service_account_json(credential_path)
 
-    def __setup_with_json(self, credential_json: str):
-        credentials = service_account.Credentials.from_service_account_info(
-            json.loads(credential_json)
-        )
+    def __setup_with_json(self, credential_json):
+        if type(credential_json) == str:
+            cred = json.loads(credential_json)
+
+        elif type(credential_json) == dict:
+            cred = credential_json
+
+        else:
+            raise Exception(f"Type {type(credential_json)} is not support")
+
+        credentials = service_account.Credentials.from_service_account_info(cred)
         self.__client = cloud_logging.Client(credentials=credentials)
 
     def info(self, content):
