@@ -52,22 +52,31 @@ class CloudLogger(object):
         self.__client = cloud_logging.Client(credentials=credentials)
 
     def info(self, content):
-        self.log_text(content, severity="INFO")
+        self.log(content, severity="INFO")
 
     def warn(self, content):
-        self.log_text(content, severity="WARNING")
+        self.log(content, severity="WARNING")
 
     def error(self, content):
-        self.log_text(content, severity="ERROR")
+        self.log(content, severity="ERROR")
 
     def critical(self, content):
-        self.log_text(content, severity="CRITICAL")
+        self.log(content, severity="CRITICAL")
 
-    def log_text(self, content, **kwargs):
+    def log(self, content: any, **kwargs):
         if self.__logger is None:
             raise Exception("Please setup credential info before use cloud logger")
 
-        if type(content) in (dict, list):
-            content = json.dumps(content)
+        if type(content) == dict:
+            self.__logger.log_struct(content, severity=kwargs.get("severity", "INFO"))
+        else:
+            self.__logger.log_text(content, severity=kwargs.get("severity", "INFO"))
 
-        self.__logger.log_text(content, severity=kwargs.get("severity", "INFO"))
+    # def log_text(self, content, **kwargs):
+    #     if self.__logger is None:
+    #         raise Exception("Please setup credential info before use cloud logger")
+
+    #     if type(content) in (dict, list):
+    #         content = json.dumps(content)
+
+    #     self.__logger.log_text(content, severity=kwargs.get("severity", "INFO"))
